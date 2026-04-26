@@ -1,4 +1,4 @@
-export const API_BASE = '/api/v1';
+export const API_BASE = (import.meta.env.VITE_API_URL || '') + '/api/v1';
 
 // NOTE: Since native JavaScript lacks Enums, we use Object.freeze() 
 // to create strict, immutable constant objects. This prevents typos 
