@@ -9,4 +9,4 @@ class PayoutRequestSerializer(serializers.Serializer):
 class PayoutResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payout
-        fields = ['id', 'merchant', 'amount_paise', 'status', 'idempotency_key', 'created_at']
+        fields = ['id', 'merchant', 'amount_paise', 'status', 'bank_account_id', 'idempotency_key', 'created_at']

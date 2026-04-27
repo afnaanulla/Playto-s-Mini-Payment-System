@@ -17,6 +17,7 @@ export const PayoutHistory = ({ payouts }) => {
             <tr>
               <th className="px-6 py-4 font-bold">Transaction ID</th>
               <th className="px-6 py-4 font-bold text-right">Amount</th>
+              <th className="px-6 py-4 font-bold">Bank Account</th>
               <th className="px-6 py-4 font-bold">Status</th>
             </tr>
           </thead>
@@ -28,6 +29,9 @@ export const PayoutHistory = ({ payouts }) => {
                 </td>
                 <td className="px-6 py-4 text-right font-semibold text-white">
                   {formatINR(payout.amount_paise)}
+                </td>
+                <td className="px-6 py-4 font-mono text-sm text-slate-400">
+                  {payout.bank_account_id}
                 </td>
                 <td className="px-6 py-4">
                   <StatusBadge status={payout.status} />

@@ -2,80 +2,71 @@
 
 A production-grade, financially indestructible payout processing system built for the Playto Founding Engineer Challenge. This system handles cross-border payout logic with strict guarantees on money integrity, concurrency, and idempotency.
 
-## Features
-- **Immutable Ledger**: Every transaction is a Credit or Debit record. Balance is always derived, never stored as a mutable column.
-- **Atomic Concurrency**: Prevents "Check-then-Deduct" race conditions using PostgreSQL row-level locking (`SELECT FOR UPDATE`).
-- **Strict Idempotency**: Prevents duplicate payouts using a 24-hour merchant-scoped idempotency layer.
-- **State Machine Payouts**: Strict lifecycle (Pending → Processing → Completed/Failed) with atomic refunds on failure.
-- **Background Workers**: Async payout simulation via Celery and Redis.
-- **Self-Healing**: Automatic retry of stuck payouts using exponential backoff.
-
 ---
 
-## Tech Stack
-- **Backend**: Django, Django REST Framework (DRF)
-- **Database**: PostgreSQL
-- **Task Queue**: Celery + Redis
-- **Frontend**: React, Tailwind CSS
-- **Infrastructure**: Docker & Docker Compose
+## 🧪 Testing (Concurrency & Idempotency)
 
----
+The repository includes a comprehensive test suite for the two most critical requirements. To run these, ensure the Docker containers are running, then execute:
 
-## Setup & Installation
-
-### 1. Prerequisites
-- Docker & Docker Compose installed.
-
-### 2. Run with Docker (Recommended)
 ```bash
-# 1. Build and start all services (Backend, Frontend, DB, Redis, Worker, Beat)
-docker-compose up --build -d
-
-# 2. Run migrations
-docker-compose exec backend python manage.py migrate
-
-# 3. Seed initial merchant data
-docker-compose exec backend python manage.py seed_data
-
-```
-The application will be available at:
-
-Frontend: http://localhost:5173
-
-Backend API: http://localhost:8000
-
-### 3. Local Development (Manual)
-If running without Docker, ensure you have PostgreSQL and Redis running, then:
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run migrations
-python manage.py migrate
-
-# Seed data
-python manage.py seed_data
-
-# Start server
-python manage.py runserver
-
-# In separate terminals:
-celery -A config worker -l info
-celery -A config beat -l info
-
-cd ../frontend
-npm install
-npm run dev
-```
-
-### Testing
-The repository includes a comprehensive test suite for the two most critical requirements: Concurrency and Idempotency.
-
-Run automated tests:
-Ensure the server is running, then execute:
-
-```
+venv\Scripts\activate
 python concurrency_test.py
 ```
 
-Note: This script dynamically finds seeded merchants and executes parallel threads to simulate race conditions.
+*Note: This script dynamically finds seeded merchants and executes parallel threads to simulate race conditions.*
+
+---
+
+## 📦 Setup & Installation (Docker)
+
+This is the fastest way to start all services (Database, Redis, Workers, API, and Frontend).
+
+```bash
+# 1. Build and start all services
+docker-compose up --build -d
+
+# 2. Run migrations
+docker-compose exec web python manage.py migrate
+
+# 3. Seed initial merchant data
+docker-compose exec web python manage.py seed_data
+```
+
+---
+
+## 📊 Viewing Logs (Monitoring the Engine)
+
+To see the background workers, the API, or the scheduler in real-time, use these commands:
+
+```bash
+# To see the Worker (Payout Processor) only
+docker-compose logs -f worker
+
+# To see the Watchdog (Celery Beat) only
+docker-compose logs -f beat
+
+# To see the Web (Django API) only
+docker-compose logs -f web
+
+# To see the Worker and the Beat together (Recommended)
+docker-compose logs -f worker beat
+
+# To see all logs from every container
+docker-compose logs -f
+```
+
+---
+
+## 🏗️ Core Background Services (Celery & Redis)
+
+To simulate a real-world payment system, this project separates the **Request** from the **Processing**:
+
+1.  **Redis (The Broker)**: Acts as the message queue. When you click "Initiate Payout", the API sends a secure task to Redis.
+2.  **Celery Worker (The Processor)**: The actual engine. It picks up tasks from Redis, simulates bank settlements (Success/Fail/Hang), and updates the database.
+3.  **Celery Beat (The Watchdog)**: A scheduler that runs every 15 seconds. It looks for any payout stuck in "Processing" for too long and triggers an automatic retry. **Without Beat, the self-healing retry logic will not run.**
+
+---
+
+## 📄 Documentation
+
+For a deep dive into the engineering decisions and AI-driven architectural audits, see [EXPLAINER.md](./EXPLAINER.md).

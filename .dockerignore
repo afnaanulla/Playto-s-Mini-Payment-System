@@ -1,0 +1,34 @@
+# Ignore virtual environment
+venv/
+.venv/
+env/
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local database
+db.sqlite3
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore Celery local files
+celerybeat-schedule*
+
+# Ignore frontend build and modules
+frontend/node_modules/
+frontend/dist/
+
+# Ignore large assets not needed in build
+*.png
+*.jpg
+*.jpeg
+*.gif

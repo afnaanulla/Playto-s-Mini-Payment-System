@@ -58,13 +58,16 @@ export const PayoutForm = ({ selectedMerchant, fetchData }) => {
         </div>
         <div className="space-y-1.5">
           <label className="text-xs text-slate-500 uppercase font-bold ml-1">Bank Account</label>
-          <input
-            type="text"
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-            placeholder="IFSC / ACC NO"
+          <select
+            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all appearance-none"
             value={bankAccount}
             onChange={(event) => setBankAccount(event.target.value)}
-          />
+          >
+            <option value="">Select Account</option>
+            <option value="ICICI_SAVINGS_1234">ICICI Bank - 1234 (Savings)</option>
+            <option value="HDFC_CURRENT_5678">HDFC Bank - 5678 (Current)</option>
+            <option value="SBI_BUSINESS_9012">SBI Bank - 9012 (Business)</option>
+          </select>
         </div>
         <div className="flex items-end">
           <button
